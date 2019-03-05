@@ -1,0 +1,11 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:company.company,intercompany_user:"
+msgid "Company User"
+msgstr "Usuari empresa"
+
+msgctxt "help:company.company,intercompany_user:"
+msgid "User with company rules when create to other company."
+msgstr "Usuari amb les regles de l'empresa quan crea per una altre empresa."
