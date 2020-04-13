@@ -4,7 +4,8 @@
 from setuptools import setup
 import re
 import os
-import configparser
+import io
+from configparser import ConfigParser
 
 MODULE = 'company_user'
 PREFIX = 'nantic'
@@ -12,8 +13,9 @@ MODULE2PREFIX = {}
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
+    return io.open(
+        os.path.join(os.path.dirname(__file__), fname),
+        'r', encoding='utf-8').read()
 
 def get_require_version(name):
     if minor_version % 2:
@@ -24,7 +26,7 @@ def get_require_version(name):
         major_version, minor_version + 1)
     return require
 
-config = configparser.ConfigParser()
+config = ConfigParser()
 config.readfp(open('tryton.cfg'))
 info = dict(config.items('tryton'))
 for key in ('depends', 'extras_depend', 'xml'):
@@ -40,12 +42,14 @@ requires = []
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
         prefix = MODULE2PREFIX.get(dep, 'trytond')
-        requires.append('%s_%s >= %s.%s, < %s.%s' %
-                (prefix, dep, major_version, minor_version,
-                major_version, minor_version + 1))
-requires.append(get_require_version('trytond'))
+        requires.append(get_require_version('%s_%s' % (prefix, dep)))
 
-tests_require = [get_require_version('proteus')]
+requires.append(get_require_version('trytond'))
+tests_require = []
+dependency_links = []
+if minor_version % 2:
+    # Add development index for testing with proteus
+    dependency_links.append('https://trydevpi.tryton.org/')
 
 setup(name='%s_%s' % (PREFIX, MODULE),
     version=version,
