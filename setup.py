@@ -50,7 +50,7 @@ dependency_links = []
 if minor_version % 2:
     branch = 'master'
 else:
-    branch = series
+    branch = version
 
 if minor_version % 2:
     # Add development index for testing with proteus
