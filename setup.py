@@ -17,6 +17,7 @@ def read(fname):
         os.path.join(os.path.dirname(__file__), fname),
         'r', encoding='utf-8').read()
 
+
 def get_require_version(name):
     if minor_version % 2:
         require = '%s >= %s.%s.dev0, < %s.%s'
@@ -40,17 +41,22 @@ minor_version = int(minor_version)
 
 requires = []
 for dep in info.get('depends', []):
-    if not re.match(r'(ir|res|webdav)(\W|$)', dep):
+    if not re.match(r'(ir|res)(\W|$)', dep):
         prefix = MODULE2PREFIX.get(dep, 'trytond')
         requires.append(get_require_version('%s_%s' % (prefix, dep)))
-
 requires.append(get_require_version('trytond'))
-tests_require = []
-dependency_links = []
+
+tests_require = [
+    get_require_version('proteus'),
+]
+
+series = '%s.%s' % (major_version, minor_version)
 if minor_version % 2:
-    branch = 'master'
+    branch = 'default'
 else:
-    branch = version
+    branch = series
+
+dependency_links = []
 
 if minor_version % 2:
     # Add development index for testing with proteus
@@ -63,7 +69,7 @@ setup(name='%s_%s' % (PREFIX, MODULE),
     author='NaN·tic',
     author_email='info@nan-tic.com',
     url='http://www.nan-tic.com/',
-    download_url="https://github.com/NaN-tic/trytond-%s" % MODULE,
+    download_url="https://bitbucket.org/nantic/trytond-%s" % MODULE,
     package_dir={'trytond.modules.%s' % MODULE: '.'},
     packages=[
         'trytond.modules.%s' % MODULE,
@@ -71,7 +77,7 @@ setup(name='%s_%s' % (PREFIX, MODULE),
         ],
     package_data={
         'trytond.modules.%s' % MODULE: (info.get('xml', [])
-            + ['tryton.cfg', 'locale/*.po', 'tests/*.rst', 'view/*.xml']),
+            + ['tryton.cfg', 'locale/*.po', 'tests/*.rst']),
         },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -91,12 +97,17 @@ setup(name='%s_%s' % (PREFIX, MODULE),
         'Natural Language :: Russian',
         'Natural Language :: Spanish',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Office/Business',
         ],
     license='GPL-3',
     install_requires=requires,
+    dependency_links=dependency_links,
     zip_safe=False,
     entry_points="""
     [trytond.modules]
